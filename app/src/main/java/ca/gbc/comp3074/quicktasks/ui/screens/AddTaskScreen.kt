@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ca.gbc.comp3074.quicktasks.R
+import ca.gbc.comp3074.quicktasks.model.Task
 import ca.gbc.comp3074.quicktasks.ui.theme.QuickTasksTheme
 import ca.gbc.comp3074.quicktasks.ui.theme.TaskBlue
 import java.text.SimpleDateFormat
@@ -25,12 +26,13 @@ import java.util.*
 @Composable
 fun AddTaskScreen(
     onBackClick: () -> Unit,
-    onSaveTask: (String, String?, Long?, String) -> Unit
+    onSaveTask: (String, String?, Long?, String) -> Unit,
+    existingTask: Task? = null
 ) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
-    var selectedCategory by remember { mutableStateOf("Other") }
+    var title by remember { mutableStateOf(existingTask?.title ?: "") }
+    var description by remember { mutableStateOf(existingTask?.description ?: "") }
+    var selectedDate by remember { mutableStateOf(existingTask?.dueDate) }
+    var selectedCategory by remember { mutableStateOf(existingTask?.category ?: "Other") }
     var showDatePicker by remember { mutableStateOf(false) }
     
     val categories = listOf("School", "Work", "Personal", "Other")
@@ -41,7 +43,7 @@ fun AddTaskScreen(
         TopAppBar(
             title = {
                 Text(
-                    text = stringResource(R.string.add_task_title),
+                    text = if (existingTask != null) "Edit Task" else stringResource(R.string.add_task_title),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )

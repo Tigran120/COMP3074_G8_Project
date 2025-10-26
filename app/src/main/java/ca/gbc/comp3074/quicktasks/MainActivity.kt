@@ -91,6 +91,7 @@ fun QuickTasksApp(
     
     var tasks by remember { mutableStateOf(sampleTasks) }
     var currentTask by remember { mutableStateOf<Task?>(null) }
+    var editingTask by remember { mutableStateOf<Task?>(null) }
     
     NavHost(
         navController = navController,
@@ -148,6 +149,27 @@ fun QuickTasksApp(
             )
         }
         
+        composable("edit_task") {
+            editingTask?.let { task ->
+                AddTaskScreen(
+                    existingTask = task,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onSaveTask = { title, description, dueDate, category ->
+                        val updatedTask = task.copy(
+                            title = title,
+                            description = description,
+                            dueDate = dueDate,
+                            category = category
+                        )
+                        tasks = tasks.map { if (it.id == task.id) updatedTask else it }
+                        navController.popBackStack()
+                    }
+                )
+            }
+        }
+        
         composable("task_detail") {
             currentTask?.let { task ->
                 TaskDetailScreen(
@@ -156,7 +178,8 @@ fun QuickTasksApp(
                         navController.popBackStack()
                     },
                     onEditTask = { taskToEdit: Task ->
-                        navController.popBackStack()
+                        editingTask = taskToEdit
+                        navController.navigate("edit_task")
                     },
                     onDeleteTask = { taskToDelete: Task ->
                         tasks = tasks.filter { it.id != taskToDelete.id }
