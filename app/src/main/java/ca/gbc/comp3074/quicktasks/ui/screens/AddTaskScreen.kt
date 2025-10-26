@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -134,6 +135,15 @@ fun AddTaskScreen(
                 ) {
                     Text("Set Date")
                 }
+                
+                if (selectedDate != null) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    TextButton(
+                        onClick = { selectedDate = null }
+                    ) {
+                        Text("Clear")
+                    }
+                }
             }
             
             Button(
@@ -161,28 +171,35 @@ fun AddTaskScreen(
     }
     
     if (showDatePicker) {
-        AlertDialog(
-            onDismissRequest = { showDatePicker = false },
-            title = { Text("Select Due Date") },
-            text = { 
-                Text("Set due date to tomorrow.")
+        val context = LocalContext.current
+        val calendar = Calendar.getInstance()
+        
+        // Set initial date to existing task's due date or current date
+        if (selectedDate != null) {
+            calendar.timeInMillis = selectedDate!!
+        }
+        
+        val datePickerDialog = android.app.DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                val selectedCalendar = Calendar.getInstance()
+                selectedCalendar.set(year, month, dayOfMonth)
+                selectedDate = selectedCalendar.timeInMillis
+                showDatePicker = false
             },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        selectedDate = System.currentTimeMillis() + 86400000
-                        showDatePicker = false
-                    }
-                ) {
-                    Text("Set Tomorrow")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
-                }
-            }
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
         )
+        
+        // Allow selecting any date (no restrictions)
+        datePickerDialog.datePicker.minDate = 0
+        
+        LaunchedEffect(showDatePicker) {
+            if (showDatePicker) {
+                datePickerDialog.show()
+            }
+        }
     }
 }
 
