@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Blue circular background -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M60,60m-60,0a60,60 0,1 1,120 0a60,60 0,1 1,-120 0" />
+    
+    <!-- Shadow beneath clipboard -->
+    <path
+        android:fillColor="#40000000"
+        android:pathData="M40,85 L80,85 L85,90 L35,90 Z" />
+    
+    <!-- Clipboard board (light orange with rounded corners) -->
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M35,30 Q35,25 40,25 L80,25 Q85,25 85,30 L85,75 Q85,80 80,80 L40,80 Q35,80 35,75 Z" />
+    
+    <!-- Clipboard clip (light grey) -->
+    <path
+        android:fillColor="#BDBDBD"
+        android:pathData="M50,20 L70,20 L70,30 L50,30 Z" />
+    
+    <!-- Paper (white, slightly smaller than board) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,35 L80,35 L80,70 L40,70 Z" />
+    
+    <!-- Text lines on paper (black) -->
+    <path
+        android:fillColor="#424242"
+        android:strokeWidth="1"
+        android:strokeColor="#424242"
+        android:pathData="M45,45 L65,45 M45,50 L60,50" />
+    
+    <!-- Green checkmark -->
+    <path
+        android:fillColor="#4CAF50"
+        android:strokeWidth="2.5"
+        android:strokeColor="#4CAF50"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M65,40 L68,43 L72,38" />
+    
+    <!-- Signature (squiggly line) -->
+    <path
+        android:fillColor="#424242"
+        android:strokeWidth="1.5"
+        android:strokeColor="#424242"
+        android:strokeLineCap="round"
+        android:pathData="M45,55 Q47,57 49,55 Q51,53 53,55 Q55,57 57,55" />
+    
+    <!-- Curled corner (bottom-right) -->
+    <path
+        android:fillColor="#F5F5F5"
+        android:pathData="M75,65 Q80,60 80,65 Q80,70 75,65" />
+    
+    <!-- Curled corner underside -->
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M75,65 Q78,62 80,65" />
+</vector>
