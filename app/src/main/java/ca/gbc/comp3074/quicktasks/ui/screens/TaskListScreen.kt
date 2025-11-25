@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,20 +34,53 @@ fun TaskListScreen(
     tasks: List<Task>,
     onTaskClick: (Task) -> Unit,
     onTaskToggleComplete: (Task) -> Unit,
-    onAddTaskClick: () -> Unit
+    onAddTaskClick: () -> Unit,
+    onClearCompleted: () -> Unit = {}
 ) {
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    val categories = listOf("All", "School", "Work", "Personal", "Other")
+    
+    val filteredTasks = remember(tasks, selectedCategory) {
+        if (selectedCategory == null || selectedCategory == "All") {
+            tasks
+        } else {
+            tasks.filter { it.category == selectedCategory }
+        }
+    }
+    
+    val completedCount = tasks.count { it.isCompleted }
+    val totalCount = tasks.size
+    
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TopAppBar(
             title = {
-                Text(
-                    text = stringResource(R.string.task_list_title),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Column {
+                    Text(
+                        text = stringResource(R.string.task_list_title),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (totalCount > 0) {
+                        Text(
+                            text = "$totalCount task${if (totalCount != 1) "s" else ""}",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                }
             },
             actions = {
+                if (completedCount > 0) {
+                    IconButton(onClick = onClearCompleted) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Clear Completed",
+                            tint = TaskGray
+                        )
+                    }
+                }
                 IconButton(onClick = onAddTaskClick) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -59,7 +93,26 @@ fun TaskListScreen(
                 containerColor = MaterialTheme.colorScheme.surface
             )
         )
-        if (tasks.isEmpty()) {
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            categories.forEach { category ->
+                FilterChip(
+                    onClick = { 
+                        selectedCategory = if (selectedCategory == category) null else category
+                    },
+                    label = { Text(category) },
+                    selected = selectedCategory == category,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+        
+        if (filteredTasks.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -68,29 +121,35 @@ fun TaskListScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = stringResource(R.string.no_tasks),
+                        text = if (tasks.isEmpty()) {
+                            stringResource(R.string.no_tasks)
+                        } else {
+                            "No tasks in this category"
+                        },
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = onAddTaskClick,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = TaskBlue
-                        )
-                    ) {
-                        Text("Add Your First Task")
+                    if (tasks.isEmpty()) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = onAddTaskClick,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = TaskBlue
+                            )
+                        ) {
+                            Text("Add Your First Task")
+                        }
                     }
                 }
             }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(tasks) { task ->
+                items(filteredTasks) { task ->
                     TaskItem(
                         task = task,
                         onClick = { onTaskClick(task) },
@@ -238,7 +297,8 @@ fun TaskListScreenPreview() {
             tasks = sampleTasks,
             onTaskClick = {},
             onTaskToggleComplete = {},
-            onAddTaskClick = {}
+            onAddTaskClick = {},
+            onClearCompleted = {}
         )
     }
 }

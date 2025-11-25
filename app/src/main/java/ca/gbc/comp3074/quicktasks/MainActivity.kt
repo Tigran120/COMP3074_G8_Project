@@ -124,6 +124,9 @@ fun QuickTasksApp(
                 },
                 onAddTaskClick = {
                     navController.navigate("add_task")
+                },
+                onClearCompleted = {
+                    tasks = tasks.filter { !it.isCompleted }
                 }
             )
         }
